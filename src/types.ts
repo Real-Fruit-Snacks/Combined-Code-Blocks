@@ -17,9 +17,10 @@ export interface CombineCodeBlocksSettings {
 	outputHeadingText: string;
 	groupByLanguage: boolean;
 	includeSourceReference: boolean;
-	// New styling options
+	// Styling options
 	useCalloutStyle: boolean;
-	calloutType: 'info' | 'tip' | 'success' | 'warning' | 'error' | 'example' | 'quote';
+	calloutType: 'info' | 'tip' | 'success' | 'warning' | 'error' | 'example' | 'quote' | 'note';
+	calloutFormatting: 'header-only' | 'full-content' | 'compact';
 	enhancedStyling: boolean;
 	customHeaderIcon: string;
 	showLanguageLabels: boolean;

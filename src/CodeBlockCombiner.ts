@@ -266,21 +266,42 @@ export class CodeBlockCombiner {
 		const customIcon = settings.customHeaderIcon || '⚡';
 		
 		if (settings.useCalloutStyle) {
-			// Create a beautiful callout-style block
+			// Create a beautiful callout-style block with proper code formatting
 			const calloutType = settings.calloutType || 'example';
 			const calloutHeader = `${customIcon} ${heading}`;
+			const calloutFormatting = settings.calloutFormatting || 'header-only';
 			
 			if (settings.groupByLanguage) {
-				// Enhanced grouped format with callout
-				return `> [!${calloutType}]+ ${calloutHeader}
+				// For grouped content, use callout header with regular formatting
+				if (calloutFormatting === 'header-only') {
+					return `> [!${calloutType}]+ ${calloutHeader}
+
+${content}`;
+				} else {
+					// Full callout formatting (may break with long lines)
+					return `> [!${calloutType}]+ ${calloutHeader}
+> 
 > ${content.split('\n').join('\n> ')}`;
+				}
 			} else {
 				const languageTag = language ? language : '';
-				const formattedContent = content.split('\n').map(line => `> ${line}`).join('\n');
-				return `> [!${calloutType}]+ ${calloutHeader}
+				
+				if (calloutFormatting === 'header-only') {
+					// Use callout header with regular code block (best for long lines)
+					return `> [!${calloutType}]+ ${calloutHeader}
+
+\`\`\`${languageTag}
+${content}
+\`\`\``;
+				} else {
+					// Full callout formatting (may break with long lines)
+					const formattedContent = content.split('\n').map(line => `> ${line}`).join('\n');
+					return `> [!${calloutType}]+ ${calloutHeader}
+> 
 > \`\`\`${languageTag}
 ${formattedContent}
 > \`\`\``;
+				}
 			}
 		} else if (settings.enhancedStyling) {
 			// Enhanced styling without callout

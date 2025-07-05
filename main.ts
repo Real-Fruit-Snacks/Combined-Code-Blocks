@@ -12,9 +12,10 @@ const DEFAULT_SETTINGS: CombineCodeBlocksSettings = {
 	outputHeadingText: '🧩 Combined Code Blocks',
 	groupByLanguage: false,
 	includeSourceReference: false,
-	// New styling options
+	// Styling options
 	useCalloutStyle: true,
 	calloutType: 'example',
+	calloutFormatting: 'header-only',
 	enhancedStyling: true,
 	customHeaderIcon: '⚡',
 	showLanguageLabels: true,
@@ -278,6 +279,18 @@ class CombineCodeBlocksSettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.calloutType || 'example')
 				.onChange(async (value) => {
 					this.plugin.settings.calloutType = value as any;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Callout Formatting')
+			.setDesc('Formatting style for the callout')
+			.addDropdown(drop => drop
+				.addOption('header-only', 'Header Only')
+				.addOption('full', 'Full')
+				.setValue(this.plugin.settings.calloutFormatting || 'header-only')
+				.onChange(async (value) => {
+					this.plugin.settings.calloutFormatting = value as any;
 					await this.plugin.saveSettings();
 				}));
 
