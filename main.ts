@@ -9,9 +9,16 @@ const DEFAULT_SETTINGS: CombineCodeBlocksSettings = {
 	languageIncludeList: [],
 	languageExcludeList: [],
 	outputLocation: 'bottom',
-	outputHeadingText: '🧩 Combined Code Blocks (auto-generated)',
+	outputHeadingText: '🧩 Combined Code Blocks',
 	groupByLanguage: false,
-	includeSourceReference: false
+	includeSourceReference: false,
+	// New styling options
+	useCalloutStyle: true,
+	calloutType: 'example',
+	enhancedStyling: true,
+	customHeaderIcon: '⚡',
+	showLanguageLabels: true,
+	useCollapsibleSections: false
 }
 
 export default class CombineCodeBlocksPlugin extends Plugin {
@@ -247,6 +254,71 @@ class CombineCodeBlocksSettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.includeSourceReference || false)
 				.onChange(async (value) => {
 					this.plugin.settings.includeSourceReference = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Use Callout Style')
+			.setDesc('Use a callout style for the combined code block')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.useCalloutStyle || false)
+				.onChange(async (value) => {
+					this.plugin.settings.useCalloutStyle = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Callout Type')
+			.setDesc('Type of callout to use')
+			.addDropdown(drop => drop
+				.addOption('example', 'Example')
+				.addOption('note', 'Note')
+				.addOption('tip', 'Tip')
+				.addOption('warning', 'Warning')
+				.setValue(this.plugin.settings.calloutType || 'example')
+				.onChange(async (value) => {
+					this.plugin.settings.calloutType = value as any;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Enhanced Styling')
+			.setDesc('Use enhanced styling for the combined code block')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.enhancedStyling || false)
+				.onChange(async (value) => {
+					this.plugin.settings.enhancedStyling = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Custom Header Icon')
+			.setDesc('Custom icon to use for the combined code block')
+			.addText(text => text
+				.setPlaceholder('Enter custom icon')
+				.setValue(this.plugin.settings.customHeaderIcon || '')
+				.onChange(async (value) => {
+					this.plugin.settings.customHeaderIcon = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Show Language Labels')
+			.setDesc('Show language labels for each combined code block')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.showLanguageLabels || false)
+				.onChange(async (value) => {
+					this.plugin.settings.showLanguageLabels = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Use Collapsible Sections')
+			.setDesc('Use collapsible sections for the combined code block')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.useCollapsibleSections || false)
+				.onChange(async (value) => {
+					this.plugin.settings.useCollapsibleSections = value;
 					await this.plugin.saveSettings();
 				}));
 	}

@@ -11,10 +11,17 @@ export interface CombineCodeBlocksSettings {
 	separatorText: string;
 	languageDetection: boolean;
 	preserveOriginalBlocks: boolean;
-	languageIncludeList?: string[];
-	languageExcludeList?: string[];
-	outputLocation?: OutputLocation;
-	outputHeadingText?: string;
-	groupByLanguage?: boolean;
-	includeSourceReference?: boolean;
+	languageIncludeList: string[];
+	languageExcludeList: string[];
+	outputLocation: 'top' | 'bottom' | 'afterHeading' | 'atCursor';
+	outputHeadingText: string;
+	groupByLanguage: boolean;
+	includeSourceReference: boolean;
+	// New styling options
+	useCalloutStyle: boolean;
+	calloutType: 'info' | 'tip' | 'success' | 'warning' | 'error' | 'example' | 'quote';
+	enhancedStyling: boolean;
+	customHeaderIcon: string;
+	showLanguageLabels: boolean;
+	useCollapsibleSections: boolean;
 } 

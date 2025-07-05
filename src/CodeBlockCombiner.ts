@@ -154,11 +154,24 @@ export class CodeBlockCombiner {
 				groups[lang].push(block);
 			}
 			
-			// Build grouped output with headers outside code blocks
+			// Build grouped output with enhanced styling
 			let result = '';
-			Object.entries(groups).forEach(([lang, blocks], groupIndex) => {
+			const languages = Object.keys(groups).sort();
+			
+			languages.forEach((lang, groupIndex) => {
+				const blocks = groups[lang];
 				if (groupIndex > 0) result += '\n\n';
-				result += `### ${lang}\n\n\`\`\`${lang}\n`;
+				
+				// Enhanced language header styling
+				if (settings.enhancedStyling || settings.useCalloutStyle) {
+					const langIcon = this.getLanguageIcon(lang);
+					result += `### ${langIcon} ${lang.toUpperCase()}\n\n`;
+				} else {
+					result += `### ${lang}\n\n`;
+				}
+				
+				// Add language-specific code block
+				result += `\`\`\`${lang}\n`;
 				
 				blocks.forEach((block, index) => {
 					let content = block.content;
@@ -187,6 +200,37 @@ export class CodeBlockCombiner {
 				return content;
 			}).join('');
 		}
+	}
+
+	private getLanguageIcon(language: string): string {
+		const icons: { [key: string]: string } = {
+			'javascript': '🟨',
+			'typescript': '🔷',
+			'python': '🐍',
+			'java': '☕',
+			'cpp': '⚙️',
+			'c': '⚙️',
+			'csharp': '🔵',
+			'go': '🐹',
+			'rust': '🦀',
+			'php': '🐘',
+			'ruby': '💎',
+			'swift': '🍎',
+			'kotlin': '🟣',
+			'html': '🌐',
+			'css': '🎨',
+			'scss': '🎨',
+			'sql': '🗃️',
+			'bash': '🐚',
+			'shell': '🐚',
+			'powershell': '💙',
+			'yaml': '📄',
+			'json': '📋',
+			'xml': '📰',
+			'markdown': '📝',
+			'plain': '📄'
+		};
+		return icons[language.toLowerCase()] || '📄';
 	}
 
 	private detectMostCommonLanguage(codeBlocks: CodeBlock[]): string {
@@ -218,16 +262,71 @@ export class CodeBlockCombiner {
 	}
 
 	private formatCombinedBlock(content: string, language: string, settings: CombineCodeBlocksSettings): string {
-		const heading = settings.outputHeadingText || '🧩 Combined Code Blocks (auto-generated)';
+		const heading = settings.outputHeadingText || '🧩 Combined Code Blocks';
+		const customIcon = settings.customHeaderIcon || '⚡';
 		
-		if (settings.groupByLanguage) {
-			// Content already includes language-specific code blocks
-			return `## ${heading}\n\n${content}`;
+		if (settings.useCalloutStyle) {
+			// Create a beautiful callout-style block
+			const calloutType = settings.calloutType || 'example';
+			const calloutHeader = `${customIcon} ${heading}`;
+			
+			if (settings.groupByLanguage) {
+				// Enhanced grouped format with callout
+				return `> [!${calloutType}]+ ${calloutHeader}
+> ${content.split('\n').join('\n> ')}`;
+			} else {
+				const languageTag = language ? language : '';
+				const formattedContent = content.split('\n').map(line => `> ${line}`).join('\n');
+				return `> [!${calloutType}]+ ${calloutHeader}
+> \`\`\`${languageTag}
+${formattedContent}
+> \`\`\``;
+			}
+		} else if (settings.enhancedStyling) {
+			// Enhanced styling without callout
+			const styledHeader = `---\n\n## ${customIcon} ${heading}\n\n---`;
+			
+			if (settings.groupByLanguage) {
+				return `${styledHeader}\n\n${content}`;
+			} else {
+				const languageTag = language ? language : '';
+				let styledContent = content;
+				
+				// Add language label if enabled
+				if (settings.showLanguageLabels && language) {
+					styledContent = `**Language:** \`${language}\`\n\n${styledContent}`;
+				}
+				
+				// Use collapsible sections if enabled
+				if (settings.useCollapsibleSections) {
+					return `${styledHeader}
+
+<details>
+<summary><strong>Click to expand ${language ? language.toUpperCase() : 'CODE'}</strong></summary>
+
+\`\`\`${languageTag}
+${styledContent}
+\`\`\`
+
+</details>`;
+				} else {
+					return `${styledHeader}
+
+\`\`\`${languageTag}
+${styledContent}
+\`\`\``;
+				}
+			}
 		} else {
-			const languageTag = language ? language : '';
-			return `## ${heading}\n\n\`\`\`${languageTag}
+			// Original simple format
+			if (settings.groupByLanguage) {
+				return `## ${heading}\n\n${content}`;
+			} else {
+				const languageTag = language ? language : '';
+				return `## ${heading}\n\n\`\`\`${languageTag}
 ${content}
 \`\`\``;
+			}
 		}
 	}
 } 

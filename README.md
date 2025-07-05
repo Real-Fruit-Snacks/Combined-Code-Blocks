@@ -4,19 +4,53 @@
 [![GitHub All Releases](https://img.shields.io/github/downloads/Real-Fruit-Snacks/Combined-Code-Blocks/total?style=for-the-badge)](https://github.com/Real-Fruit-Snacks/Combined-Code-Blocks/releases)
 [![GitHub](https://img.shields.io/github/license/Real-Fruit-Snacks/Combined-Code-Blocks?style=for-the-badge)](https://github.com/Real-Fruit-Snacks/Combined-Code-Blocks/blob/main/LICENSE)
 
-A powerful Obsidian plugin that intelligently combines all code blocks in a note into a single, organized code block. Perfect for consolidating scattered code snippets, creating comprehensive code summaries, and maintaining clean documentation.
+A powerful Obsidian plugin that intelligently combines all code blocks in a note into a single, beautifully styled code block. Perfect for consolidating scattered code snippets, creating comprehensive code summaries, and maintaining clean documentation with **stunning visual presentation**.
 
 ## ✨ Features
 
 - 🔗 **Smart Code Block Combination** - Automatically merge all code blocks in a note
 - 🎯 **Intelligent Language Detection** - Detects the most common programming language
+- 🎨 **Beautiful Styling Options** - Choose from callout styles, enhanced formatting, and more
 - 📍 **Flexible Output Positioning** - Choose where to place the combined block (top, bottom, after heading, or at cursor)
 - 🏷️ **Language Filtering** - Include or exclude specific programming languages
-- 🗂️ **Language Grouping** - Organize code blocks by programming language with subheadings
+- 🗂️ **Language Grouping** - Organize code blocks by programming language with emoji icons
 - 📝 **Source References** - Optionally include original line number references
 - 🚫 **Selective Exclusion** - Skip specific code blocks with `<!-- combine:ignore -->`
 - ⚙️ **Per-Note Configuration** - Override settings using YAML frontmatter
-- 🎨 **Customizable Separators** - Define custom text between combined blocks
+- 🎛️ **Customizable Separators** - Define custom text between combined blocks
+- 🔽 **Collapsible Sections** - Create expandable/collapsible code blocks
+- ⚡ **Custom Icons** - Personalize with custom header icons
+
+## 🎨 Visual Styling Options
+
+### Callout Style (Recommended)
+Creates beautiful, themed callout blocks that integrate seamlessly with Obsidian:
+
+```
+> [!example]+ ⚡ Combined Code Blocks
+> ```javascript
+> console.log("Hello World!");
+> ```
+```
+
+### Enhanced Styling
+Adds visual enhancements with horizontal rules and language labels:
+
+```
+---
+## ⚡ Combined Code Blocks
+---
+**Language:** `javascript`
+```
+
+### Language Grouping with Icons
+Organizes code by language with beautiful emoji icons:
+
+```
+### 🟨 JAVASCRIPT
+### 🐍 PYTHON
+### ☕ JAVA
+```
 
 ## 🚀 Quick Start
 
@@ -38,7 +72,7 @@ A powerful Obsidian plugin that intelligently combines all code blocks in a note
 1. Open a note with multiple code blocks
 2. Open the command palette (`Ctrl/Cmd + Shift + P`)
 3. Run **"Combine Code Blocks"**
-4. The combined code block will appear at your chosen location
+4. The combined code block will appear at your chosen location with beautiful styling
 
 ## 📖 Documentation
 
@@ -51,7 +85,7 @@ A powerful Obsidian plugin that intelligently combines all code blocks in a note
 
 ### Configuration
 
-#### Plugin Settings
+#### Core Settings
 
 | Setting | Description | Default |
 |---------|-------------|---------|
@@ -60,9 +94,20 @@ A powerful Obsidian plugin that intelligently combines all code blocks in a note
 | **Language Include List** | Comma-separated languages to include | *(empty - all languages)* |
 | **Language Exclude List** | Comma-separated languages to exclude | *(empty)* |
 | **Output Location** | Where to insert the combined block | `bottom` |
-| **Output Heading Text** | Custom heading for the combined section | `🧩 Combined Code Blocks (auto-generated)` |
+| **Output Heading Text** | Custom heading for the combined section | `🧩 Combined Code Blocks` |
 | **Group by Language** | Organize blocks by programming language | `false` |
 | **Include Source Reference** | Add original line number comments | `false` |
+
+#### 🎨 Styling Settings
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| **Use Callout Style** | Create beautiful callout-style blocks | `true` |
+| **Callout Type** | Type of callout (example, note, tip, warning) | `example` |
+| **Enhanced Styling** | Add visual enhancements like horizontal rules | `true` |
+| **Custom Header Icon** | Customize the header icon | `⚡` |
+| **Show Language Labels** | Display language information prominently | `true` |
+| **Use Collapsible Sections** | Make code blocks expandable/collapsible | `false` |
 
 #### Output Locations
 
@@ -86,6 +131,9 @@ combine-code-blocks:
   groupByLanguage: true
   includeSourceReference: true
   outputHeadingText: "📋 My Combined Code"
+  useCalloutStyle: true
+  calloutType: "tip"
+  customHeaderIcon: "🔥"
 ---
 ```
 
@@ -104,52 +152,116 @@ print("This block will be included")
 ```
 ```
 
-### Output Examples
+### 🎨 Styling Examples
 
-#### Default Output
+#### Callout Style (Most Beautiful)
 ```markdown
-## 🧩 Combined Code Blocks (auto-generated)
-
-```python
-print("Hello from block 1")
-
-// --- Next Code Block ---
-
-print("Hello from block 2")
+> [!example]+ ⚡ Combined Code Blocks
+> ```javascript
+> console.log("Hello from JavaScript!");
+> 
+> // --- Next Code Block ---
+> 
+> function greet(name) {
+>   return `Hello, ${name}!`;
+> }
+> ```
 ```
-```
 
-#### Grouped by Language
+#### Enhanced Styling with Language Labels
 ```markdown
-## 🧩 Combined Code Blocks (auto-generated)
+---
 
-### python
+## ⚡ Combined Code Blocks
 
-```python
-print("Hello from Python")
-```
+---
 
-### javascript
+**Language:** `javascript`
 
 ```javascript
-console.log("Hello from JavaScript");
+console.log("Hello from JavaScript!");
 ```
+```
+
+#### Grouped by Language with Icons
+```markdown
+---
+
+## ⚡ Combined Code Blocks
+
+---
+
+### 🟨 JAVASCRIPT
+
+```javascript
+console.log("Hello from JavaScript!");
+```
+
+### 🐍 PYTHON
+
+```python
+print("Hello from Python!")
+```
+```
+
+#### Collapsible Sections
+```markdown
+---
+
+## ⚡ Combined Code Blocks
+
+---
+
+<details>
+<summary><strong>Click to expand JAVASCRIPT</strong></summary>
+
+```javascript
+console.log("Hello from JavaScript!");
+```
+
+</details>
 ```
 
 #### With Source References
 ```markdown
-## 🧩 Combined Code Blocks (auto-generated)
-
-```python
-# Source: lines 5-7
-print("Hello from block 1")
-
-// --- Next Code Block ---
-
-# Source: lines 12-14
-print("Hello from block 2")
+> [!example]+ ⚡ Combined Code Blocks
+> ```javascript
+> // Source: lines 5-7
+> console.log("Hello from JavaScript!");
+> 
+> // --- Next Code Block ---
+> 
+> // Source: lines 12-16
+> function greet(name) {
+>   return `Hello, ${name}!`;
+> }
+> ```
 ```
-```
+
+### 🌈 Language Icons
+
+The plugin automatically adds beautiful emoji icons for different programming languages:
+
+- 🟨 JavaScript
+- 🔷 TypeScript  
+- 🐍 Python
+- ☕ Java
+- ⚙️ C/C++
+- 🔵 C#
+- 🐹 Go
+- 🦀 Rust
+- 🐘 PHP
+- 💎 Ruby
+- 🍎 Swift
+- 🟣 Kotlin
+- 🌐 HTML
+- 🎨 CSS/SCSS
+- 🗃️ SQL
+- 🐚 Bash/Shell
+- 💙 PowerShell
+- 📄 YAML/JSON
+- 📝 Markdown
+- 📄 Plain text
 
 ## 🛠️ Development
 
@@ -193,6 +305,11 @@ npm run dev
 - Verify you have code blocks in your note
 - Check language filtering settings
 - Ensure blocks aren't marked with `<!-- combine:ignore -->`
+
+### Styling Issues
+- Try different callout types (example, note, tip, warning)
+- Toggle enhanced styling on/off
+- Check if your theme supports callouts
 
 ### Output Location Issues
 - **`afterHeading`**: Searches for headings containing words from your output heading text

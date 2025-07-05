@@ -82,4 +82,19 @@ jspm_packages/
 .vscode-test
 
 # Obsidian plugin specific
-data.json 
+data.json
+
+# Development and testing files
+STYLING_EXAMPLES.md
+test-notes/
+*.test.md
+*.demo.md
+
+# Release files (generated)
+*.zip
+releases/
+
+# Temporary files
+*.tmp
+*.temp
+.temp/ 
