@@ -1,0 +1,10 @@
+{
+  "id": "combine-code-blocks",
+  "name": "Combine Code Blocks",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "Combine all code blocks in a note into a single code block at the bottom",
+  "author": "Your Name",
+  "authorUrl": "https://github.com/yourusername",
+  "isDesktopOnly": false
+} 
