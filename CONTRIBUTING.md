@@ -125,7 +125,7 @@ refactor: improve code block extraction logic
 ### Testing Checklist
 
 - [ ] Basic combine functionality works
-- [ ] All output locations work correctly
+- [ ] Combined block appears at the end of the note
 - [ ] Language filtering works as expected
 - [ ] Frontmatter overrides function properly
 - [ ] `<!-- combine:ignore -->` tags are respected

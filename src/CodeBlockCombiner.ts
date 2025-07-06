@@ -5,23 +5,50 @@ export class CodeBlockCombiner {
 	private settings: CombineCodeBlocksSettings;
 
 	constructor(settings: CombineCodeBlocksSettings) {
-		this.settings = settings;
+		this.settings = this.validateSettings(settings);
+	}
+
+	private validateSettings(settings: CombineCodeBlocksSettings): CombineCodeBlocksSettings {
+		// Validate and sanitize settings
+		const validatedSettings: CombineCodeBlocksSettings = {
+			...settings,
+			separatorText: typeof settings.separatorText === 'string' ? settings.separatorText : '\n\n// --- Next Code Block ---\n\n',
+			languageDetection: typeof settings.languageDetection === 'boolean' ? settings.languageDetection : true,
+			languageIncludeList: Array.isArray(settings.languageIncludeList) ? settings.languageIncludeList : [],
+			languageExcludeList: Array.isArray(settings.languageExcludeList) ? settings.languageExcludeList : [],
+			groupByLanguage: typeof settings.groupByLanguage === 'boolean' ? settings.groupByLanguage : false,
+			includeSourceReference: typeof settings.includeSourceReference === 'boolean' ? settings.includeSourceReference : false,
+			useCalloutStyle: typeof settings.useCalloutStyle === 'boolean' ? settings.useCalloutStyle : true,
+			calloutType: ['info', 'tip', 'success', 'warning', 'error', 'example', 'quote', 'note'].includes(settings.calloutType) ? settings.calloutType : 'example',
+			calloutFormatting: ['header-only', 'full-content', 'compact'].includes(settings.calloutFormatting) ? settings.calloutFormatting : 'header-only',
+			enhancedStyling: typeof settings.enhancedStyling === 'boolean' ? settings.enhancedStyling : true,
+			customHeaderIcon: typeof settings.customHeaderIcon === 'string' ? settings.customHeaderIcon : '⚡',
+			showLanguageLabels: typeof settings.showLanguageLabels === 'boolean' ? settings.showLanguageLabels : true,
+			useCollapsibleSections: typeof settings.useCollapsibleSections === 'boolean' ? settings.useCollapsibleSections : false
+		};
+
+		return validatedSettings;
 	}
 
 	public resolveSettings(content: string): CombineCodeBlocksSettings {
-		const frontmatter = this.parseFrontmatter(content);
-		if (!frontmatter || typeof frontmatter !== 'object') return this.settings;
-		const overrides = frontmatter['combine-code-blocks'] || {};
-		
-		// Normalize language lists to lowercase
-		if (overrides.languageIncludeList) {
-			overrides.languageIncludeList = overrides.languageIncludeList.map((lang: string) => lang.toLowerCase());
+		try {
+			const frontmatter = this.parseFrontmatter(content);
+			if (!frontmatter || typeof frontmatter !== 'object') return this.settings;
+			const overrides = frontmatter['combine-code-blocks'] || {};
+			
+			// Normalize language lists to lowercase
+			if (overrides.languageIncludeList && Array.isArray(overrides.languageIncludeList)) {
+				overrides.languageIncludeList = overrides.languageIncludeList.map((lang: string) => lang.toLowerCase());
+			}
+			if (overrides.languageExcludeList && Array.isArray(overrides.languageExcludeList)) {
+				overrides.languageExcludeList = overrides.languageExcludeList.map((lang: string) => lang.toLowerCase());
+			}
+			
+			return { ...this.settings, ...overrides };
+		} catch (error) {
+			console.error('Error resolving settings:', error);
+			return this.settings;
 		}
-		if (overrides.languageExcludeList) {
-			overrides.languageExcludeList = overrides.languageExcludeList.map((lang: string) => lang.toLowerCase());
-		}
-		
-		return { ...this.settings, ...overrides };
 	}
 
 	private parseFrontmatter(content: string): any {
@@ -37,26 +64,40 @@ export class CodeBlockCombiner {
 	}
 
 	public combineCodeBlocks(content: string, settingsOverride?: CombineCodeBlocksSettings): string | null {
-		const settings = settingsOverride || this.settings;
-		const codeBlocks = this.extractCodeBlocks(content, settings);
-		if (codeBlocks.length === 0) {
+		try {
+			if (!content || typeof content !== 'string') {
+				return null;
+			}
+			
+			const settings = settingsOverride || this.settings;
+			const codeBlocks = this.extractCodeBlocks(content, settings);
+			if (codeBlocks.length === 0) {
+				return null;
+			}
+			const combinedContent = this.combineBlocks(codeBlocks, settings);
+			const detectedLanguage = settings.languageDetection ? this.detectMostCommonLanguage(codeBlocks) : '';
+			return this.formatCombinedBlock(combinedContent, detectedLanguage, settings);
+		} catch (error) {
+			console.error('Error combining code blocks:', error);
 			return null;
 		}
-		const combinedContent = this.combineBlocks(codeBlocks, settings);
-		const detectedLanguage = settings.languageDetection ? this.detectMostCommonLanguage(codeBlocks) : '';
-		return this.formatCombinedBlock(combinedContent, detectedLanguage, settings);
 	}
 
 	private extractCodeBlocks(content: string, settings: CombineCodeBlocksSettings): CodeBlock[] {
 		const codeBlocks: CodeBlock[] = [];
 		const lines = content.split('\n');
+		const lineCount = lines.length;
 		let inCodeBlock = false;
 		let currentBlock: Partial<CodeBlock> = {};
 		let blockContent: string[] = [];
 		let skipNextBlock = false;
 		let codeBlockDepth = 0; // Track nested code blocks
 
-		for (let i = 0; i < lines.length; i++) {
+		// Pre-compile regex for better performance
+		const codeBlockStartRegex = /^```(\w*)(.*)$/;
+		const codeBlockEndRegex = /^```$/;
+
+		for (let i = 0; i < lineCount; i++) {
 			const line = lines[i];
 
 			// Check for combine:ignore tag (only when not in a code block)
@@ -66,7 +107,7 @@ export class CodeBlockCombiner {
 			}
 			
 			// Check for code block start - be more strict about the pattern
-			const codeBlockMatch = line.match(/^```(\w*)(.*)$/);
+			const codeBlockMatch = line.match(codeBlockStartRegex);
 			if (codeBlockMatch && !inCodeBlock) {
 				// Only start a new block if we're not already in one
 				inCodeBlock = true;
@@ -81,7 +122,7 @@ export class CodeBlockCombiner {
 			}
 
 			// Check for code block end
-			if (line.trim() === '```' && inCodeBlock && codeBlockDepth === 1) {
+			if (codeBlockEndRegex.test(line) && inCodeBlock && codeBlockDepth === 1) {
 				inCodeBlock = false;
 				codeBlockDepth = 0;
 				currentBlock.endLine = i + 1;
@@ -262,7 +303,7 @@ export class CodeBlockCombiner {
 	}
 
 	private formatCombinedBlock(content: string, language: string, settings: CombineCodeBlocksSettings): string {
-		const heading = settings.outputHeadingText || '🧩 Combined Code Blocks';
+		const heading = '🧩 Combined Code Blocks';
 		const customIcon = settings.customHeaderIcon || '⚡';
 		
 		if (settings.useCalloutStyle) {
@@ -277,6 +318,10 @@ export class CodeBlockCombiner {
 					return `> [!${calloutType}]+ ${calloutHeader}
 
 ${content}`;
+				} else if (calloutFormatting === 'compact') {
+					return `> [!${calloutType}]- ${calloutHeader}
+
+${content}`;
 				} else {
 					// Full callout formatting (may break with long lines)
 					return `> [!${calloutType}]+ ${calloutHeader}
@@ -289,6 +334,13 @@ ${content}`;
 				if (calloutFormatting === 'header-only') {
 					// Use callout header with regular code block (best for long lines)
 					return `> [!${calloutType}]+ ${calloutHeader}
+
+\`\`\`${languageTag}
+${content}
+\`\`\``;
+				} else if (calloutFormatting === 'compact') {
+					// Compact callout with collapsed header
+					return `> [!${calloutType}]- ${calloutHeader}
 
 \`\`\`${languageTag}
 ${content}

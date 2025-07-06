@@ -5,11 +5,8 @@ import { CombineCodeBlocksSettings } from './src/types';
 const DEFAULT_SETTINGS: CombineCodeBlocksSettings = {
 	separatorText: '\n\n// --- Next Code Block ---\n\n',
 	languageDetection: true,
-	preserveOriginalBlocks: true,
 	languageIncludeList: [],
 	languageExcludeList: [],
-	outputLocation: 'bottom',
-	outputHeadingText: '🧩 Combined Code Blocks',
 	groupByLanguage: false,
 	includeSourceReference: false,
 	// Styling options
@@ -40,14 +37,7 @@ export default class CombineCodeBlocksPlugin extends Plugin {
 			}
 		});
 
-		// Add command to remove combined code block
-		this.addCommand({
-			id: 'remove-combined-code-block',
-			name: 'Remove Combined Code Block',
-			editorCallback: (editor: Editor, view: MarkdownView) => {
-				this.removeCombinedCodeBlock(editor, view);
-			}
-		});
+
 
 		// Add settings tab
 		this.addSettingTab(new CombineCodeBlocksSettingTab(this.app, this));
@@ -59,91 +49,53 @@ export default class CombineCodeBlocksPlugin extends Plugin {
 
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		// Update the CodeBlockCombiner if it exists
+		if (this.codeBlockCombiner) {
+			this.codeBlockCombiner = new CodeBlockCombiner(this.settings);
+		}
 	}
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+		// Update the CodeBlockCombiner with new settings
+		this.codeBlockCombiner = new CodeBlockCombiner(this.settings);
 	}
+
+
 
 	private combineCodeBlocks(editor: Editor, view: MarkdownView) {
-		const content = editor.getValue();
-		const resolvedSettings = this.codeBlockCombiner.resolveSettings(content);
-		const combinedBlock = this.codeBlockCombiner.combineCodeBlocks(content, resolvedSettings);
-		if (combinedBlock) {
-			let newContent = content;
-			// Remove existing combined block if it exists
-			const lines = content.split('\n');
-			const lastCombinedBlockIndex = this.findLastCombinedBlockIndex(lines);
-			if (lastCombinedBlockIndex !== -1) {
-				lines.splice(lastCombinedBlockIndex, lines.length - lastCombinedBlockIndex);
-				newContent = lines.join('\n');
+		try {
+			const content = editor.getValue();
+			
+			// Validate content
+			if (!content || content.trim().length === 0) {
+				new Notice('Document is empty or contains no content.');
+				return;
 			}
-			const location = resolvedSettings.outputLocation || 'bottom';
-			if (location === 'top') {
-				newContent = combinedBlock + '\n\n' + newContent;
-			} else if (location === 'afterHeading') {
-				// Look for a specific heading pattern that user wants to insert after
-				const targetHeading = resolvedSettings.outputHeadingText || '🧩 Combined Code Blocks (auto-generated)';
-				// Remove the emoji and special chars for a more flexible search
-				const cleanHeading = targetHeading.replace(/[^\w\s]/g, '').trim();
-				const headingRegex = new RegExp(`^#+\\s+.*${cleanHeading.split(' ').join('.*')}.*$`, 'mi');
-				const headingMatch = newContent.match(headingRegex);
-				if (headingMatch) {
-					const insertPos = newContent.indexOf(headingMatch[0]) + headingMatch[0].length;
-					newContent = newContent.slice(0, insertPos) + '\n\n' + combinedBlock + newContent.slice(insertPos);
-				} else {
-					// fallback to bottom
-					newContent = newContent + '\n\n' + combinedBlock;
-				}
-			} else if (location === 'atCursor') {
-				const cursor = editor.getCursor();
-				const cursorIndex = editor.posToOffset(cursor);
-				// Insert at cursor with proper spacing
-				const beforeCursor = newContent.slice(0, cursorIndex);
-				const afterCursor = newContent.slice(cursorIndex);
-				const needsSpaceBefore = beforeCursor.length > 0 && !beforeCursor.endsWith('\n');
-				const needsSpaceAfter = afterCursor.length > 0 && !afterCursor.startsWith('\n');
-				newContent = beforeCursor + 
-					(needsSpaceBefore ? '\n\n' : '') + 
-					combinedBlock + 
-					(needsSpaceAfter ? '\n\n' : '') + 
-					afterCursor;
-			} else {
-				// bottom (default)
-				newContent = newContent + '\n\n' + combinedBlock;
+			
+			const resolvedSettings = this.codeBlockCombiner.resolveSettings(content);
+			const combinedBlock = this.codeBlockCombiner.combineCodeBlocks(content, resolvedSettings);
+			
+					if (combinedBlock) {
+			try {
+				// Always append to the end of the note
+				const newContent = content + '\n\n' + combinedBlock;
+				editor.setValue(newContent);
+				new Notice('Code blocks combined successfully!');
+			} catch (insertError) {
+				console.error('Error inserting combined block:', insertError);
+				new Notice('Error inserting combined block. Please try again.');
 			}
-			editor.setValue(newContent);
-			new Notice('Code blocks combined successfully!');
 		} else {
-			new Notice('No code blocks found to combine.');
+				new Notice('No code blocks found to combine.');
+			}
+		} catch (error) {
+			console.error('Error combining code blocks:', error);
+			new Notice('An error occurred while combining code blocks. Please check the console for details.');
 		}
 	}
 
-	private removeCombinedCodeBlock(editor: Editor, view: MarkdownView) {
-		const content = editor.getValue();
-		const lines = content.split('\n');
-		const lastCombinedBlockIndex = this.findLastCombinedBlockIndex(lines);
-		
-		if (lastCombinedBlockIndex !== -1) {
-			lines.splice(lastCombinedBlockIndex, lines.length - lastCombinedBlockIndex);
-			editor.setValue(lines.join('\n'));
-			new Notice('Combined code block removed!');
-		} else {
-			new Notice('No combined code block found to remove.');
-		}
-	}
 
-	private findLastCombinedBlockIndex(lines: string[]): number {
-		// Look for the combined code block heading pattern (more robust)
-		for (let i = lines.length - 1; i >= 0; i--) {
-			const line = lines[i];
-			// Check for the heading pattern that indicates a combined block
-			if (line.match(/^##\s+.*[Cc]ombined.*[Cc]ode.*[Bb]locks.*/)) {
-				return i;
-			}
-		}
-		return -1;
-	}
 }
 
 class CombineCodeBlocksSettingTab extends PluginSettingTab {
@@ -181,15 +133,7 @@ class CombineCodeBlocksSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 
-		new Setting(containerEl)
-			.setName('Preserve Original Blocks')
-			.setDesc('Keep original code blocks when combining')
-			.addToggle(toggle => toggle
-				.setValue(this.plugin.settings.preserveOriginalBlocks)
-				.onChange(async (value) => {
-					this.plugin.settings.preserveOriginalBlocks = value;
-					await this.plugin.saveSettings();
-				}));
+
 
 		new Setting(containerEl)
 			.setName('Language Include List')
@@ -213,30 +157,7 @@ class CombineCodeBlocksSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 
-		new Setting(containerEl)
-			.setName('Output Location')
-			.setDesc('Where to insert the combined code block')
-			.addDropdown(drop => drop
-				.addOption('top', 'Top of note')
-				.addOption('bottom', 'Bottom of note')
-				.addOption('afterHeading', 'After heading')
-				.addOption('atCursor', 'At cursor')
-				.setValue(this.plugin.settings.outputLocation || 'bottom')
-				.onChange(async (value) => {
-					this.plugin.settings.outputLocation = value as any;
-					await this.plugin.saveSettings();
-				}));
 
-		new Setting(containerEl)
-			.setName('Output Heading Text')
-			.setDesc('Heading text to display above the combined code block')
-			.addText(text => text
-				.setPlaceholder('e.g. 🧩 Combined Code Blocks (auto-generated)')
-				.setValue(this.plugin.settings.outputHeadingText || '')
-				.onChange(async (value) => {
-					this.plugin.settings.outputHeadingText = value;
-					await this.plugin.saveSettings();
-				}));
 
 		new Setting(containerEl)
 			.setName('Group by Language')
@@ -262,7 +183,7 @@ class CombineCodeBlocksSettingTab extends PluginSettingTab {
 			.setName('Use Callout Style')
 			.setDesc('Use a callout style for the combined code block')
 			.addToggle(toggle => toggle
-				.setValue(this.plugin.settings.useCalloutStyle || false)
+				.setValue(this.plugin.settings.useCalloutStyle ?? true)
 				.onChange(async (value) => {
 					this.plugin.settings.useCalloutStyle = value;
 					await this.plugin.saveSettings();
@@ -275,7 +196,11 @@ class CombineCodeBlocksSettingTab extends PluginSettingTab {
 				.addOption('example', 'Example')
 				.addOption('note', 'Note')
 				.addOption('tip', 'Tip')
+				.addOption('info', 'Info')
+				.addOption('success', 'Success')
 				.addOption('warning', 'Warning')
+				.addOption('error', 'Error')
+				.addOption('quote', 'Quote')
 				.setValue(this.plugin.settings.calloutType || 'example')
 				.onChange(async (value) => {
 					this.plugin.settings.calloutType = value as any;
@@ -287,7 +212,8 @@ class CombineCodeBlocksSettingTab extends PluginSettingTab {
 			.setDesc('Formatting style for the callout')
 			.addDropdown(drop => drop
 				.addOption('header-only', 'Header Only')
-				.addOption('full', 'Full')
+				.addOption('full-content', 'Full Content')
+				.addOption('compact', 'Compact')
 				.setValue(this.plugin.settings.calloutFormatting || 'header-only')
 				.onChange(async (value) => {
 					this.plugin.settings.calloutFormatting = value as any;
@@ -298,7 +224,7 @@ class CombineCodeBlocksSettingTab extends PluginSettingTab {
 			.setName('Enhanced Styling')
 			.setDesc('Use enhanced styling for the combined code block')
 			.addToggle(toggle => toggle
-				.setValue(this.plugin.settings.enhancedStyling || false)
+				.setValue(this.plugin.settings.enhancedStyling ?? true)
 				.onChange(async (value) => {
 					this.plugin.settings.enhancedStyling = value;
 					await this.plugin.saveSettings();
@@ -319,7 +245,7 @@ class CombineCodeBlocksSettingTab extends PluginSettingTab {
 			.setName('Show Language Labels')
 			.setDesc('Show language labels for each combined code block')
 			.addToggle(toggle => toggle
-				.setValue(this.plugin.settings.showLanguageLabels || false)
+				.setValue(this.plugin.settings.showLanguageLabels ?? true)
 				.onChange(async (value) => {
 					this.plugin.settings.showLanguageLabels = value;
 					await this.plugin.saveSettings();

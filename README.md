@@ -11,7 +11,7 @@ A powerful Obsidian plugin that intelligently combines all code blocks in a note
 - 🔗 **Smart Code Block Combination** - Automatically merge all code blocks in a note
 - 🎯 **Intelligent Language Detection** - Detects the most common programming language
 - 🎨 **Beautiful Styling Options** - Choose from callout styles, enhanced formatting, and more
-- 📍 **Flexible Output Positioning** - Choose where to place the combined block (top, bottom, after heading, or at cursor)
+- 📍 **Simple Output** - Combined blocks are automatically appended to the end of your note
 - 🏷️ **Language Filtering** - Include or exclude specific programming languages
 - 🗂️ **Language Grouping** - Organize code blocks by programming language with emoji icons
 - 📝 **Source References** - Optionally include original line number references
@@ -72,7 +72,7 @@ Organizes code by language with beautiful emoji icons:
 1. Open a note with multiple code blocks
 2. Open the command palette (`Ctrl/Cmd + Shift + P`)
 3. Run **"Combine Code Blocks"**
-4. The combined code block will appear at your chosen location with beautiful styling
+4. The combined code block will be appended to the end of your note with beautiful styling
 
 ## 📖 Documentation
 
@@ -81,7 +81,6 @@ Organizes code by language with beautiful emoji icons:
 | Command | Description |
 |---------|-------------|
 | `Combine Code Blocks` | Creates or updates the combined code block |
-| `Remove Combined Code Block` | Removes the existing combined code block |
 
 ### Configuration
 
@@ -93,8 +92,6 @@ Organizes code by language with beautiful emoji icons:
 | **Language Detection** | Automatically detect the most common language | `true` |
 | **Language Include List** | Comma-separated languages to include | *(empty - all languages)* |
 | **Language Exclude List** | Comma-separated languages to exclude | *(empty)* |
-| **Output Location** | Where to insert the combined block | `bottom` |
-| **Output Heading Text** | Custom heading for the combined section | `🧩 Combined Code Blocks` |
 | **Group by Language** | Organize blocks by programming language | `false` |
 | **Include Source Reference** | Add original line number comments | `false` |
 
@@ -103,18 +100,16 @@ Organizes code by language with beautiful emoji icons:
 | Setting | Description | Default |
 |---------|-------------|---------|
 | **Use Callout Style** | Create beautiful callout-style blocks | `true` |
-| **Callout Type** | Type of callout (example, note, tip, warning) | `example` |
+| **Callout Type** | Type of callout (info, tip, success, warning, error, example, quote, note) | `example` |
+| **Callout Formatting** | Formatting style for callouts (header-only, full-content, compact) | `header-only` |
 | **Enhanced Styling** | Add visual enhancements like horizontal rules | `true` |
 | **Custom Header Icon** | Customize the header icon | `⚡` |
 | **Show Language Labels** | Display language information prominently | `true` |
 | **Use Collapsible Sections** | Make code blocks expandable/collapsible | `false` |
 
-#### Output Locations
+#### Output Behavior
 
-- **`bottom`** - At the end of the note *(default)*
-- **`top`** - At the beginning of the note
-- **`afterHeading`** - After a heading matching the output heading text
-- **`atCursor`** - At the current cursor position
+The plugin always appends the combined code block to the end of your note, keeping things simple and predictable. This ensures no accidental content overwrites and provides a consistent experience.
 
 ### Advanced Usage
 
@@ -127,12 +122,11 @@ Override plugin settings for individual notes using YAML frontmatter:
 combine-code-blocks:
   languageIncludeList: [python, javascript]
   languageExcludeList: [markdown]
-  outputLocation: top
   groupByLanguage: true
   includeSourceReference: true
-  outputHeadingText: "📋 My Combined Code"
   useCalloutStyle: true
   calloutType: "tip"
+  calloutFormatting: "compact"
   customHeaderIcon: "🔥"
 ---
 ```
@@ -311,10 +305,8 @@ npm run dev
 - Toggle enhanced styling on/off
 - Check if your theme supports callouts
 
-### Output Location Issues
-- **`afterHeading`**: Searches for headings containing words from your output heading text
-- **`atCursor`**: Places the block at your current cursor position
-- Falls back to `bottom` if the specified location isn't found
+### Output Behavior
+The plugin always appends combined code blocks to the end of your note, ensuring consistency and preventing any accidental content overwrites.
 
 ## 🤝 Contributing
 

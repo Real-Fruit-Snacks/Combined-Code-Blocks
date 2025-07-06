@@ -1,5 +1,3 @@
-export type OutputLocation = 'top' | 'bottom' | 'afterHeading' | 'atCursor';
-
 export interface CodeBlock {
 	language: string;
 	content: string;
@@ -10,11 +8,8 @@ export interface CodeBlock {
 export interface CombineCodeBlocksSettings {
 	separatorText: string;
 	languageDetection: boolean;
-	preserveOriginalBlocks: boolean;
 	languageIncludeList: string[];
 	languageExcludeList: string[];
-	outputLocation: 'top' | 'bottom' | 'afterHeading' | 'atCursor';
-	outputHeadingText: string;
 	groupByLanguage: boolean;
 	includeSourceReference: boolean;
 	// Styling options
