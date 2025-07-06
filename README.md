@@ -1,8 +1,8 @@
 # Obsidian Combine Code Blocks Plugin
 
-[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Real-Fruit-Snacks/Combined-Code-Blocks?style=for-the-badge)](https://github.com/Real-Fruit-Snacks/Combined-Code-Blocks/releases/latest)
-[![GitHub All Releases](https://img.shields.io/github/downloads/Real-Fruit-Snacks/Combined-Code-Blocks/total?style=for-the-badge)](https://github.com/Real-Fruit-Snacks/Combined-Code-Blocks/releases)
-[![GitHub](https://img.shields.io/github/license/Real-Fruit-Snacks/Combined-Code-Blocks?style=for-the-badge)](https://github.com/Real-Fruit-Snacks/Combined-Code-Blocks/blob/main/LICENSE)
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Real-Fruit-Snacks/Obsidian-Combined-Code-Blocks?style=for-the-badge)](https://github.com/Real-Fruit-Snacks/Obsidian-Combined-Code-Blocks/releases/latest)
+[![GitHub All Releases](https://img.shields.io/github/downloads/Real-Fruit-Snacks/Obsidian-Combined-Code-Blocks/total?style=for-the-badge)](https://github.com/Real-Fruit-Snacks/Obsidian-Combined-Code-Blocks/releases)
+[![GitHub](https://img.shields.io/github/license/Real-Fruit-Snacks/Obsidian-Combined-Code-Blocks?style=for-the-badge)](https://github.com/Real-Fruit-Snacks/Obsidian-Combined-Code-Blocks/blob/main/LICENSE)
 
 A powerful Obsidian plugin that intelligently combines all code blocks in a note into a single, beautifully styled code block. Perfect for consolidating scattered code snippets, creating comprehensive code summaries, and maintaining clean documentation with **stunning visual presentation**.
 
@@ -63,7 +63,7 @@ Organizes code by language with beautiful emoji icons:
 4. Install and enable the plugin
 
 #### Manual Installation
-1. Download the latest release from [GitHub Releases](https://github.com/Real-Fruit-Snacks/Combined-Code-Blocks/releases)
+1. Download the latest release from [GitHub Releases](https://github.com/Real-Fruit-Snacks/Obsidian-Combined-Code-Blocks/releases)
 2. Extract `main.js` and `manifest.json` to your vault's `.obsidian/plugins/combine-code-blocks/` folder
 3. Enable the plugin in **Settings** → **Community Plugins**
 
@@ -268,8 +268,8 @@ The plugin automatically adds beautiful emoji icons for different programming la
 
 ```bash
 # Clone the repository
-git clone https://github.com/Real-Fruit-Snacks/Combined-Code-Blocks.git
-cd Combined-Code-Blocks
+git clone https://github.com/Real-Fruit-Snacks/Obsidian-Combined-Code-Blocks.git
+cd Obsidian-Combined-Code-Blocks
 
 # Install dependencies
 npm install
@@ -334,15 +334,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- 🐛 [Report bugs](https://github.com/Real-Fruit-Snacks/Combined-Code-Blocks/issues)
-- 💡 [Request features](https://github.com/Real-Fruit-Snacks/Combined-Code-Blocks/issues)
-- 💬 [Join discussions](https://github.com/Real-Fruit-Snacks/Combined-Code-Blocks/discussions)
+- 🐛 [Report bugs](https://github.com/Real-Fruit-Snacks/Obsidian-Combined-Code-Blocks/issues)
+- 💡 [Request features](https://github.com/Real-Fruit-Snacks/Obsidian-Combined-Code-Blocks/issues)
+- 💬 [Join discussions](https://github.com/Real-Fruit-Snacks/Obsidian-Combined-Code-Blocks/discussions)
 
 ---
 
 <div align="center">
 
-**[⭐ Star this repo](https://github.com/Real-Fruit-Snacks/Combined-Code-Blocks) if you find it useful!**
+**[⭐ Star this repo](https://github.com/Real-Fruit-Snacks/Obsidian-Combined-Code-Blocks) if you find it useful!**
 
 Made with ❤️ for the Obsidian community
 

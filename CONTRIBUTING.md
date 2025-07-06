@@ -16,8 +16,8 @@ Thank you for your interest in contributing to the Obsidian Combine Code Blocks 
 1. **Fork the repository**
    ```bash
    # Click the "Fork" button on GitHub, then clone your fork
-   git clone https://github.com/YOUR_USERNAME/Combined-Code-Blocks.git
-   cd Combined-Code-Blocks
+   git clone https://github.com/YOUR_USERNAME/Obsidian-Combined-Code-Blocks.git
+cd Obsidian-Combined-Code-Blocks
    ```
 
 2. **Install dependencies**
@@ -154,7 +154,7 @@ refactor: improve code block extraction logic
 
 ### Before Submitting a Bug Report
 
-1. Check if the issue already exists in [GitHub Issues](https://github.com/Real-Fruit-Snacks/Combined-Code-Blocks/issues)
+1. Check if the issue already exists in [GitHub Issues](https://github.com/Real-Fruit-Snacks/Obsidian-Combined-Code-Blocks/issues)
 2. Try to reproduce the bug with minimal steps
 3. Test with default plugin settings
 4. Check if the issue occurs with other plugins disabled
@@ -315,7 +315,7 @@ We welcome contributions in these areas:
 
 If you need help with development:
 
-1. Check the [GitHub Discussions](https://github.com/Real-Fruit-Snacks/Combined-Code-Blocks/discussions)
+1. Check the [GitHub Discussions](https://github.com/Real-Fruit-Snacks/Obsidian-Combined-Code-Blocks/discussions)
 2. Look at existing issues and PRs
 3. Join the Obsidian Discord community
 4. Create a discussion thread for questions
