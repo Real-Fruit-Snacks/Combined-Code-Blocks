@@ -23,12 +23,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Real-Fruit-Snacks/Obsidian-Combined-Code-Blocks.git"
+    "url": "git+https://github.com/Real-Fruit-Snacks/obsidian-combined-code-blocks.git"
   },
   "bugs": {
-    "url": "https://github.com/Real-Fruit-Snacks/Obsidian-Combined-Code-Blocks/issues"
+    "url": "https://github.com/Real-Fruit-Snacks/obsidian-combined-code-blocks/issues"
   },
-  "homepage": "https://github.com/Real-Fruit-Snacks/Obsidian-Combined-Code-Blocks#readme",
+  "homepage": "https://github.com/Real-Fruit-Snacks/obsidian-combined-code-blocks#readme",
   "engines": {
     "node": ">=16.0.0"
   },
